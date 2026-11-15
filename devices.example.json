@@ -1,0 +1,39 @@
+{
+  "_comment": "Copy to devices.json and edit. The addresses here are the lab in the small-office-network repo, so the two projects line up.",
+
+  "interval_s": 300,
+
+  "ping": {
+    "count": 3,
+    "timeout_s": 2.0
+  },
+
+  "thresholds": {
+    "fail_streak": 3,
+    "slow_streak": 2,
+    "slow_factor": 2.0,
+    "baseline_min": 8,
+    "baseline_window": 20
+  },
+
+  "devices": [
+    {
+      "name": "HQ-R1",
+      "host": "192.168.10.1",
+      "snmp": { "community": "public", "if_index": 1 }
+    },
+    {
+      "name": "HQ-SW1",
+      "host": "192.168.99.2",
+      "snmp": { "community": "public", "if_index": 1 }
+    },
+    {
+      "name": "BR-R1",
+      "host": "10.0.0.2"
+    },
+    {
+      "name": "file-server",
+      "host": "192.168.30.10"
+    }
+  ]
+}

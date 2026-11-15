@@ -1,0 +1,12 @@
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.venv/
+venv/
+
+# The live config and the database it writes. devices.json holds SNMP
+# community strings, which in v2c are passwords in clear text, so it stays out
+# of the repository - devices.example.json is the one that is committed.
+devices.json
+*.db
+ci-devices.json

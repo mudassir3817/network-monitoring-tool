@@ -1,0 +1,50 @@
+name: tests
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  test:
+    # The ping parser is the reason this runs on all three. Its whole job is
+    # reading output that differs per platform, so testing it on one would
+    # miss exactly the bugs it exists to prevent.
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest, macos-latest]
+        python-version: ["3.10", "3.12"]
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+
+      - name: Install pytest
+        run: python -m pip install --upgrade pip pytest
+
+      - name: Run the tests
+        run: python -m pytest -q
+
+      - name: Check the tool actually runs
+        # The tests stub the network out, so this is the only step that proves
+        # the real ping path works on this platform: a pass against loopback,
+        # then a report. An unreachable address is included so the failure path
+        # runs too.
+        shell: bash
+        run: |
+          cat > ci-devices.json <<'JSON'
+          {
+            "ping": { "count": 1, "timeout_s": 1.0 },
+            "devices": [
+              { "name": "loopback", "host": "127.0.0.1" },
+              { "name": "nowhere", "host": "192.0.2.1" }
+            ]
+          }
+          JSON
+          python -m netmon --once -c ci-devices.json -d ci.db
+          python -m netmon --report --hours 0 -d ci.db
